@@ -1,0 +1,9 @@
+[package]
+name = "scrabber"
+version = "0.1.0"
+authors = ["Aslam Ahammed <aslamplr@gmail.com>"]
+
+[dependencies]
+regex = "1.0.0"
+reqwest = "0.8.6"
+scraper = "0.7.0"
