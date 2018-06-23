@@ -1,5 +1,8 @@
 extern crate scrabber;
+#[macro_use]
+extern crate prettytable;
 
+use prettytable::Table;
 use scrabber::{ScrabSelector, Scrabber};
 
 fn main() {
@@ -7,11 +10,19 @@ fn main() {
     let params = vec![
         ("trainNo", "12076"),
         ("jStation", "TVC#false"),
-        ("jDate", "22-Jun-2018"),
-        ("jDateMap", "22-Jun-2018"),
-        ("jDateDay", "Fri"),
+        ("jDate", "24-Jun-2018"),
+        ("jDateMap", "24-Jun-2018"),
+        ("jDateDay", "Sun"),
     ];
-    let selector = ScrabSelector::new("table#ResTab > tbody", "td");
+    let selector = ScrabSelector::new("table#ResTab > tbody", "tr");
     let scrabr = Scrabber::new(url, params, selector);
-    println!("{:#?}", scrabr.start());
+
+    let mut table = Table::new();
+    table.add_row(row!["Details"]);
+    let res = scrabr.start();
+    res.into_iter().filter(|x| x.len() > 1).for_each(|x| {
+        table.add_row(row![x[0], x[1]]);
+    });
+
+    table.printstd();
 }

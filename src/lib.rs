@@ -62,9 +62,11 @@ fn get_vals_from_container(html: &str, selector: &ScrabSelector) -> Vec<Vec<Stri
         .unwrap()
         .select(&inner_selector)
         .map(|x| {
-            x.text()
+            let texts: Vec<_> = x.text()
                 .map(|y| re.replace_all(y, "").to_string())
-                .collect()
+                .filter(|y| y.len() > 0)
+                .collect();
+            texts
         })
         .collect()
 }

@@ -7,3 +7,4 @@ authors = ["Aslam Ahammed <aslamplr@gmail.com>"]
 regex = "1.0.0"
 reqwest = "0.8.6"
 scraper = "0.7.0"
+prettytable-rs = "^0.6"
