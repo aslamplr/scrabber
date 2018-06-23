@@ -6,6 +6,9 @@ use regex::Regex;
 use reqwest::Client;
 use scraper::{Html, Selector};
 
+type ScrabParams<'a> = Vec<(&'a str, &'a str)>;
+type ScrabResult<T> = Result<T, &'static str>;
+
 pub struct ScrabSelector {
     pub outer_selector: String,
     pub inner_selector: String,
@@ -22,14 +25,14 @@ impl ScrabSelector {
 
 pub struct Scrabber<'a> {
     pub url: &'a str,
-    pub params: Vec<(&'a str, &'a str)>,
+    pub params: ScrabParams<'a>,
     pub selector: ScrabSelector,
 }
 
 impl<'a> Scrabber<'a> {
     pub fn new(
         url: &'a str,
-        params: Vec<(&'a str, &'a str)>,
+        params: ScrabParams<'a>,
         selector: ScrabSelector,
     ) -> Scrabber<'a> {
         Scrabber {
@@ -39,24 +42,24 @@ impl<'a> Scrabber<'a> {
         }
     }
 
-    pub fn start(&self) -> Vec<Vec<String>> {
-        let html = get_html_from_url(&self.url, &self.params);
-        get_vals_from_container(&html, &self.selector)
+    pub fn start(&self) -> ScrabResult<Vec<Vec<String>>> {
+        let html = get_html_from_url(&self.url, &self.params).unwrap();
+        Ok(get_vals_from_container(&html, &self.selector)?)
     }
 }
 
-fn get_html_from_url(url: &str, params: &Vec<(&str, &str)>) -> String {
+fn get_html_from_url(url: &str, params: &ScrabParams) -> ScrabResult<String> {
     let client = Client::new();
     let mut resp = client.post(url).form(&params).send().unwrap();
-    resp.text().unwrap()
+    Ok(resp.text().unwrap())
 }
 
-fn get_vals_from_container(html: &str, selector: &ScrabSelector) -> Vec<Vec<String>> {
+fn get_vals_from_container(html: &str, selector: &ScrabSelector) -> ScrabResult<Vec<Vec<String>>> {
     let document = Html::parse_document(html);
     let container_selector = Selector::parse(&selector.outer_selector).unwrap();
     let inner_selector = Selector::parse(&selector.inner_selector).unwrap();
     let re = Regex::new("(\n|\t)").unwrap();
-    document
+    Ok(document
         .select(&container_selector)
         .next()
         .unwrap()
@@ -68,5 +71,5 @@ fn get_vals_from_container(html: &str, selector: &ScrabSelector) -> Vec<Vec<Stri
                 .collect();
             texts
         })
-        .collect()
+        .collect())
 }

@@ -10,3 +10,6 @@ scraper = "0.7.0"
 prettytable-rs = "^0.6"
 clap = "2.31.2"
 chrono = "0.4"
+
+[profile.release]
+lto = true
