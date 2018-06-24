@@ -60,8 +60,8 @@ fn main() {
         ("jDateMap", date),
         ("jDateDay", &day),
     ];
-    let selector = ScrabSelector::new("table#ResTab > tbody", "tr");
-    let scrabr = Scrabber::new(url, params, selector);
+    let selector = ScrabSelector::new("table#ResTab > tbody", "tr").unwrap();
+    let scrabr = Scrabber::new(url, params, selector).unwrap();
 
     let mut table = Table::new();
     table.add_row(row!["Details"]);
