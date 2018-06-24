@@ -67,7 +67,7 @@ fn main() {
     table.add_row(row!["Details"]);
     let res = scrabr.start().unwrap();
     res.into_iter().filter(|x| x.len() > 1).for_each(|x| {
-        table.add_row(row![x[0], x[1]]);
+        table.add_row(row![x[0], x[1..].join(" ")]);
     });
 
     table.printstd();
