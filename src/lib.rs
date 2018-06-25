@@ -11,18 +11,18 @@ type ScrabParams<'a> = Vec<(&'a str, &'a str)>;
 type ScrabResult<T> = Result<T, Box<Error>>;
 
 pub struct ScrabSelector {
-    pub outer_selector: String,
-    pub inner_selector: String,
+    pub container_selector: String,
+    pub item_selector: String,
 }
 
 impl ScrabSelector {
-    pub fn new(outer_selector: &str, inner_selector: &str) -> Result<ScrabSelector, &'static str> {
-        if outer_selector == "" || inner_selector == "" {
+    pub fn new(container_selector: &str, item_selector: &str) -> Result<ScrabSelector, &'static str> {
+        if container_selector == "" || item_selector == "" {
             return Err("Selectors shouldn't be empty");
         }
         Ok(ScrabSelector {
-            outer_selector: outer_selector.to_string(),
-            inner_selector: inner_selector.to_string(),
+            container_selector: container_selector.to_string(),
+            item_selector: item_selector.to_string(),
         })
     }
 }
@@ -63,15 +63,15 @@ fn get_html_from_url(url: &str, params: &ScrabParams) -> ScrabResult<String> {
 
 fn get_vals_from_container(html: &str, selector: &ScrabSelector) -> ScrabResult<Vec<Vec<String>>> {
     let document = Html::parse_document(html);
-    let container_selector = Selector::parse(&selector.outer_selector).unwrap();
-    let inner_selector = Selector::parse(&selector.inner_selector).unwrap();
+    let container_selector = Selector::parse(&selector.container_selector).unwrap();
+    let item_selector = Selector::parse(&selector.item_selector).unwrap();
     let re = Regex::new("(\n|\t)")?;
     let container = document
         .select(&container_selector)
-        .next().unwrap();
+        .nth(0).unwrap();
     Ok(
         container
-        .select(&inner_selector)
+        .select(&item_selector)
         .map(|x| {
             let texts: Vec<_> = x.text()
                 .map(|y| re.replace_all(y, "").to_string())
