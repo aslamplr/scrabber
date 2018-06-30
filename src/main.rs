@@ -3,6 +3,7 @@ extern crate scrabber;
 extern crate prettytable;
 extern crate chrono;
 extern crate clap;
+extern crate openssl_probe;
 
 use chrono::{Local, NaiveDate};
 use clap::{App, Arg};
@@ -10,6 +11,7 @@ use prettytable::Table;
 use scrabber::{ScrabSelector, Scrabber};
 
 fn main() {
+    openssl_probe::init_ssl_cert_env_vars();
     let date = Local::today().format("%d-%b-%Y").to_string();
     let matches = App::new("Scrabber NTES CLI")
         .version("0.1.0")
